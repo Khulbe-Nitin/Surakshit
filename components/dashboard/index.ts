@@ -1,0 +1,11 @@
+export { StatsCard } from "./StatsCard";
+export { DataTable } from "./DataTable";
+export { DashboardCard } from "./DashboardCard";
+export { PrivatePage } from "./PrivatePage";
+export { DashboardHeader } from "./DashboardHeader";
+export { EngagementChart } from "./EngagementChart";
+export { ModuleChart } from "./ModuleChart";
+export { GameDistributionChart } from "./GameDistributionChart";
+export { PerformanceTrendChart } from "./PerformanceTrendChart";
+export { GameScoresChart } from "./GameScoresChart";
+export { ProgressRadialChart } from "./ProgressRadialChart";

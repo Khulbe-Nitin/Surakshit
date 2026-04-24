@@ -1,0 +1,181 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  name      String?
+  userType  USERTYPE @default(STUDENT)
+  student   Student?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  teacher   Teacher?
+  conversions Conversation[]
+}
+
+model Student {
+  id               String      @id @default(cuid())
+  user             User        @relation(fields: [userId], references: [id])
+  userId           String      @unique
+  enrolledAt       DateTime    @default(now())
+  gamesPlayed      Int         @default(0)
+  gamesScores      GameScore[]
+  modulesCompleted Modules[]   @relation("CompletedModules")
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+}
+
+model Teacher {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GameScore {
+  id        String        @id @default(cuid())
+  student   Student       @relation(fields: [studentId], references: [id])
+  studentId String
+  score     Int
+  gameName  GAMENAMETYPES
+  playedAt  DateTime      @default(now())
+  gameType  GAMETYPE
+}
+
+model Quiz {
+  id          String     @id @default(cuid())
+  title       String     @unique
+  description String
+  questions   Question[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Question {
+  id            String       @id @default(cuid())
+  quiz          Quiz         @relation(fields: [quizId], references: [id])
+  quizId        String
+  questionText  String
+  options       String[]
+  correctAnswer String
+  theme         QuestionType
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@unique([quizId, questionText])
+}
+
+model Modules {
+  id          String    @id @default(cuid())
+  title       String    @unique
+  description String
+  lessons     Lesson[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedBy Student[] @relation("CompletedModules")
+  published   Boolean   @default(false)
+  coverImage  String?
+  duration    Int
+  level       String
+}
+
+model Lesson {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  videoUrl  String
+  module    Modules  @relation(fields: [moduleId], references: [id])
+  moduleId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([moduleId, title])
+}
+
+// Alert System Models
+model AlertSubscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  isActive     Boolean  @default(true)
+  subscribedAt DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SentAlert {
+  id             String   @id @default(cuid())
+  alertId        String
+  title          String
+  severity       String
+  recipientCount Int
+  sentAt         DateTime @default(now())
+}
+
+model AlertCheck {
+  id          String   @id @default(cuid())
+  checkedAt   DateTime @default(now())
+  alertsFound Int      @default(0)
+  emailsSent  Int      @default(0)
+}
+
+model Conversation {
+  id         String    @id @default(cuid())
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+  startedAt  DateTime  @default(now())
+  endedAt    DateTime?
+  messages   Message[]
+}
+
+model Message {
+  id            String      @id @default(cuid())
+  conversation    Conversation  @relation(fields: [conversationId], references: [id])
+  conversationId  String
+  sender        String
+  content       String
+  timestamp     DateTime    @default(now())
+}
+
+enum USERTYPE {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum GAMETYPE {
+  QUIZ
+  PUZZLE
+  ADVENTURE
+  RHYTHM
+}
+
+enum GAMENAMETYPES {
+  EARTHQUAKE
+  FLOOD
+  TSUNAMI
+  VOLCANO
+  FOREST_FIRE
+}
+
+enum QuestionType {
+  EARTHQUAKE
+  FLOOD
+  TSUNAMI
+  VOLCANO
+  FOREST_FIRE
+  OTHER
+}
