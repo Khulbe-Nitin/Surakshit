@@ -26,7 +26,7 @@ export default function Navbar() {
                 <nav className="h-16 flex items-center justify-between" aria-label="Global">
                     <Link href="/" className="flex items-center gap-3">
                         <div className="w-9 h-9 bg-blue-500/90 text-white rounded-lg flex items-center justify-center font-bold text-sm shadow-md">
-                            SC
+                            SR
                         </div>
                         <span className="text-base sm:text-lg font-semibold tracking-tight">Surakshit</span>
                     </Link>

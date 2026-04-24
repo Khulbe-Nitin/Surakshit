@@ -187,6 +187,7 @@ export default function ChatAssistant() {
                     <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
                         <form onSubmit={handleSendMessage} className="flex gap-2">
                             <input
+                                autoFocus
                                 type="text"
                                 value={message}
                                 onChange={(e) => setMessage(e.target.value)}

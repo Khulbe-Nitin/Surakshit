@@ -1,18 +1,17 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+// import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
+
+import { GoogleGenAI } from "@google/genai";
+
 
 const apiKey = process.env.AI_API_KEY;
 if (!apiKey) {
   throw new Error("AI_API_KEY is not set in environment variables.");
 }
 
-const gemini = new GoogleGenerativeAI(apiKey);
-const geminiConfig = {
-  temperature: 0.9,
-  topP: 1,
-  topK: 1,
-  maxOutputTokens: 4096,
-};
+const gemini = new GoogleGenAI({
+  apiKey
+});
 
 const promptEnhancement = `You are Crimsy, the AI Chat Assistant for the Surakshit platform.
 Your persona is a calm, helpful, and reassuring safety guide.
@@ -45,16 +44,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const geminiModel = gemini.getGenerativeModel({
-      model: "gemini-2.5-flash",
+
+    const result = await gemini.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: [{ role: "user", parts: [{ text: promptEnhancement + message }] }],
     });
 
-    const result = await geminiModel.generateContent({
-      contents: [{ role: "user", parts: [{ text: promptEnhancement+message }] }],
-      generationConfig: geminiConfig,
-    });
-
-    const response = result.response.text();
+    const response = result.text;
 
     return NextResponse.json(
       {
